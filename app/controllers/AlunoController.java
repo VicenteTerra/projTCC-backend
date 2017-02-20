@@ -43,15 +43,14 @@ public class AlunoController extends Controller {
 
 		ObjectNode jsResp = Json.newObject();
 		JsonNode json = request().body().asJson();
-		try {
-			Aluno alunoLogado = Aluno.findByEmailSenha(json.findValue("email").asText(),
-					json.findValue("senha").asText());
+		Aluno alunoLogado = Aluno.findByEmailSenha(json.findValue("email").asText(), json.findValue("senha").asText());
+		if (alunoLogado != null) {
 			jsResp.put("status", 0);
 			jsResp.put("message", "Logado com sucesso!");
 			jsResp.put("alunoLogado", Json.toJson(alunoLogado));
-		} catch (Exception e) {
+		} else {
 			jsResp.put("status", 1);
-			jsResp.put("message", "Erro no login!" + e.getMessage());
+			jsResp.put("message", "Usuário não encontrado!" );
 		}
 		return ok(jsResp);
 	}
