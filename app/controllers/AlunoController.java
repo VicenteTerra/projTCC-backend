@@ -50,7 +50,7 @@ public class AlunoController extends Controller {
 			jsResp.put("alunoLogado", Json.toJson(alunoLogado));
 		} else {
 			jsResp.put("status", 1);
-			jsResp.put("message", "Usuário não encontrado!" );
+			jsResp.put("message", "Usuário não encontrado!");
 		}
 		return ok(jsResp);
 	}

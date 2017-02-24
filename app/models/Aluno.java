@@ -37,7 +37,7 @@ public class Aluno extends Model {
 	@Column(name = "telefone")
 	private String telefone;
 
-	@Column(name = "")
+	@Column(name = "lista_estabelecimentos")
 	@ManyToMany
 	private List<Estabelecimento> listaEstabelecimentos;
 	
