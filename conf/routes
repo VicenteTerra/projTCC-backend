@@ -11,3 +11,4 @@ POST /aluno/login controllers.AlunoController.loginAluno()
 #Estabelecimentos
 
 GET /estabelecimento/all controllers.EstabelecimentoController.getAll()
+POST /estabelecimento/new controllers.EstabelecimentoController.cadastroEstabelecimento()
