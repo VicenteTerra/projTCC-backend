@@ -75,7 +75,7 @@ public class EstabelecimentoController extends Controller {
 				newDoc.setOwnerID(estab.getId());
 
 				byte[] data = Base64.getDecoder().decode(newDoc.getBase64().getBytes());
-				if (Paths.get("/home/vicente/userFiles/" + estab.getCnpj()) == null) {
+				if (!Files.exists(Paths.get("/home/vicente/userFiles/" + estab.getCnpj()))) {
 					Files.createDirectory(Paths.get("/home/vicente/userFiles/" + estab.getCnpj()));
 				}
 				Path destinationFile = Paths
