@@ -29,10 +29,10 @@ public class Estabelecimento extends Model {
 
 	@Column(name = "cnpj", unique = true)
 	private String cnpj;
-	
+
 	@Column(name = "nome_responsavel")
 	private String nomeResponsavel;
-	
+
 	@Column(name = "cpf_reponsavel")
 	private String cpfResponsavel;
 
@@ -159,5 +159,9 @@ public class Estabelecimento extends Model {
 
 	public static Estabelecimento findByEmailSenha(String email, String senha) {
 		return find.where().eq("email", email).eq("senha", senha).eq("ativo", 1).findUnique();
+	}
+
+	public static Estabelecimento findByCnpj(String cnpj) {
+		return find.where().eq("ativo", 1).eq("cnpj", cnpj).findUnique();
 	}
 }

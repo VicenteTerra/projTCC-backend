@@ -2,6 +2,7 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
+
 #Alunos
 
 GET  /aluno/all  controllers.AlunoController.getAll()
@@ -12,3 +13,5 @@ POST /aluno/login controllers.AlunoController.loginAluno()
 
 GET /estabelecimento/all controllers.EstabelecimentoController.getAll()
 POST /estabelecimento/new controllers.EstabelecimentoController.cadastroEstabelecimento()
+POST  /uploadFile   controllers.EstabelecimentoController.uploadFile()
+
