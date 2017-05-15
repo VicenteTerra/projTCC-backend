@@ -154,7 +154,7 @@ public class Estabelecimento extends Model {
 	}
 
 	public static List<Estabelecimento> findAll() {
-		return find.all();
+		return find.where().eq("ativo", 1).findList();
 	}
 
 	public static Estabelecimento findByEmailSenha(String email, String senha) {

@@ -1,10 +1,9 @@
 package controllers;
 
-import java.io.File;
+
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
+
 import java.io.IOException;
-import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -15,11 +14,10 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import models.Documento;
 import models.Estabelecimento;
-
+import models.Usuario;
 import play.libs.Json;
 import play.mvc.Controller;
-import play.mvc.Http.MultipartFormData;
-import play.mvc.Http.MultipartFormData.FilePart;
+
 import play.mvc.Result;
 
 public class EstabelecimentoController extends Controller {
@@ -63,6 +61,11 @@ public class EstabelecimentoController extends Controller {
 
 		try {
 			estabelecimento.save();
+			Usuario newUser = new Usuario();
+			newUser.setLogin(estabelecimento.getEmail());
+			newUser.setTipo(1);
+			newUser.setDescricao("Estabelecimento");
+			newUser.save();
 			Estabelecimento estab = Estabelecimento.findByCnpj(cnpj);
 			JsonNode files = json.findValue("files");
 
@@ -75,7 +78,7 @@ public class EstabelecimentoController extends Controller {
 				newDoc.setOwnerID(estab.getId());
 
 				byte[] data = Base64.getDecoder().decode(newDoc.getBase64().getBytes());
-				if (Paths.get("/home/vicente/userFiles/" + estab.getCnpj()) == null) {
+				if (!Files.exists(Paths.get("/home/vicente/userFiles/" + estab.getCnpj()))) {
 					Files.createDirectory(Paths.get("/home/vicente/userFiles/" + estab.getCnpj()));
 				}
 				Path destinationFile = Paths

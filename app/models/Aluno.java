@@ -6,6 +6,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
+
 import com.avaje.ebean.Model;
 
 @Entity
@@ -27,17 +29,14 @@ public class Aluno extends Model {
 	private String email;
 
 	@Column(name = "instituicao")
-	private String instituicao;
+	@OneToMany
+	private Instituicao instituicao;
 
 	@Column(name = "data_nascimento")
 	private String dataNascimento;
 
 	@Column(name = "telefone")
 	private String telefone;
-
-	@Column(name = "lista_estabelecimentos")
-	@ManyToMany
-	private List<Estabelecimento> listaEstabelecimentos;
 
 	@Column(name = "senha")
 	private String senha;
@@ -84,11 +83,11 @@ public class Aluno extends Model {
 		this.email = email;
 	}
 
-	public String getInstituicao() {
+	public Instituicao getInstituicao() {
 		return instituicao;
 	}
 
-	public void setInstituicao(String instituicao) {
+	public void setInstituicao(Instituicao instituicao) {
 		this.instituicao = instituicao;
 	}
 
@@ -106,14 +105,6 @@ public class Aluno extends Model {
 
 	public void setTelefone(String telefone) {
 		this.telefone = telefone;
-	}
-
-	public List<Estabelecimento> getListaEstabelecimentos() {
-		return listaEstabelecimentos;
-	}
-
-	public void setListaEstabelecimentos(List<Estabelecimento> listaEstabelecimentos) {
-		this.listaEstabelecimentos = listaEstabelecimentos;
 	}
 
 	public String getSenha() {
