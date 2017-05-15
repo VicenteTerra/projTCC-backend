@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import models.Aluno;
 import models.Estabelecimento;
+import models.Instituicao;
+import models.Usuario;
 import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Result;
@@ -25,14 +27,21 @@ public class AlunoController extends Controller {
 		novoAluno.setCpf(json.findValue("cpf").asText());
 		novoAluno.setEmail(json.findValue("email").asText());
 		novoAluno.setDataNascimento(json.findValue("dataNascimento").asText());
-		novoAluno.setInstituicao(json.findValue("instituicao").asText());
 		novoAluno.setSenha(json.findValue("senha").asText());
 		novoAluno.setTipoUsuario(1);
+		Instituicao inst = Instituicao.findById(json.findValue("instituicao").asInt());
+		novoAluno.setInstituicao(inst);
 		if (json.findValue("telefone") != null) {
 			novoAluno.setTelefone(json.findValue("telefone").asText());
 		}
 		try {
 			novoAluno.save();
+			Usuario newUser = new Usuario();
+			newUser.setLogin(novoAluno.getEmail());
+			newUser.setTipo(2);
+			newUser.setDescricao("Aluno");
+			newUser.save();
+			
 			jsResp.put("status", 0);
 			jsResp.put("message", "Cadastrado com sucesso!");
 		} catch (Exception e) {

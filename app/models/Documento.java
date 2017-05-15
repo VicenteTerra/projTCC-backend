@@ -20,7 +20,7 @@ public class Documento extends Model{
 	private Integer id;
 	@Column(name = "owner_id")
 	private Integer ownerID;
-	@Column(name = "base64_string")
+	@Column(name = "base64_string" , columnDefinition = "longtext")
 	private String base64;
 	@Column(name = "file_name")
 	private String filename;
