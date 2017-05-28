@@ -8,6 +8,7 @@ create table aluno (
   nome                          varchar(255),
   cpf                           varchar(255),
   email                         varchar(255),
+  instituicao                   integer,
   data_nascimento               varchar(255),
   telefone                      varchar(255),
   senha                         varchar(255),

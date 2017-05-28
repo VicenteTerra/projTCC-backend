@@ -10,6 +10,7 @@ import models.Usuario;
 import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Result;
+import responses.ConsultaResponse;
 
 public class AlunoController extends Controller {
 
@@ -29,8 +30,7 @@ public class AlunoController extends Controller {
 		novoAluno.setDataNascimento(json.findValue("dataNascimento").asText());
 		novoAluno.setSenha(json.findValue("senha").asText());
 		novoAluno.setTipoUsuario(1);
-		Instituicao inst = Instituicao.findById(json.findValue("instituicao").asInt());
-		novoAluno.setInstituicao(inst);
+		novoAluno.setInstituicao(json.findValue("instituicao").asInt());
 		if (json.findValue("telefone") != null) {
 			novoAluno.setTelefone(json.findValue("telefone").asText());
 		}
@@ -41,7 +41,7 @@ public class AlunoController extends Controller {
 			newUser.setTipo(2);
 			newUser.setDescricao("Aluno");
 			newUser.save();
-			
+
 			jsResp.put("status", 0);
 			jsResp.put("message", "Cadastrado com sucesso!");
 		} catch (Exception e) {
@@ -70,6 +70,23 @@ public class AlunoController extends Controller {
 		} else {
 			jsResp.put("status", 1);
 			jsResp.put("message", "Usuário não encontrado!");
+		}
+		return ok(jsResp);
+	}
+
+	public Result consultaAluno(String idAluno) {
+		ObjectNode jsResp = Json.newObject();
+		Aluno alunoConsulta = Aluno.findByCpf(idAluno);
+		if (alunoConsulta != null) {
+			jsResp.put("status", 0);
+			jsResp.put("message", "Consulta bem sucedida.");
+			Instituicao inst = Instituicao.findById(alunoConsulta.getInstituicao());
+			ConsultaResponse resp = new ConsultaResponse(alunoConsulta.getNome(), "", alunoConsulta.getCpf(), "",
+					inst.getNome());
+			jsResp.put("alunoConsulta", Json.toJson(resp));
+		} else {
+			jsResp.put("status", 1);
+			jsResp.put("message", "Usuário não cadastrado no sistema.");
 		}
 		return ok(jsResp);
 	}

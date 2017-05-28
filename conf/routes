@@ -11,6 +11,7 @@ POST /usuario/getTipo  controllers.UsuarioController.getUserType()
 GET  /aluno/all  controllers.AlunoController.getAll()
 POST /aluno/new  controllers.AlunoController.cadastroAluno()
 POST /aluno/login controllers.AlunoController.loginAluno()
+GET /aluno/consulta/:cpfAluno controllers.AlunoController.consultaAluno(cpfAluno:String)
 
 #Estabelecimentoset
 

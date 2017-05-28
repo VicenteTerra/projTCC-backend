@@ -36,6 +36,7 @@ public class Instituicao extends Model {
 	private List<Estabelecimento> estabelecimentoCredenciados;
 	@Column(name = "senha")
 	private String senha;
+	
 
 	public Integer getId() {
 		return id;
