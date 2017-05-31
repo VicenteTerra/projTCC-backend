@@ -36,7 +36,6 @@ public class Instituicao extends Model {
 	private List<Estabelecimento> estabelecimentoCredenciados;
 	@Column(name = "senha")
 	private String senha;
-	
 
 	public Integer getId() {
 		return id;
@@ -124,5 +123,9 @@ public class Instituicao extends Model {
 
 	public static Instituicao findById(Integer id) {
 		return find.where().eq("id", id).eq("ativo", 1).findUnique();
+	}
+
+	public static Instituicao findByEmailSenha(String email, String senha) {
+		return find.where().eq("email", email).eq("senha", senha).eq("ativo", 1).findUnique();
 	}
 }

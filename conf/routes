@@ -4,7 +4,8 @@
 
 #Usuario
 
-POST /usuario/getTipo  controllers.UsuarioController.getUserType()
+POST /usuario/auth controllers.UsuarioController.userAuth()
+POST /usuario/logout controllers.UsuarioController.logout()
 
 #Alunos
 

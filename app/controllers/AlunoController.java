@@ -3,6 +3,7 @@ package controllers;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import clientesConsulta.ConsultaMatricula;
 import models.Aluno;
 import models.Estabelecimento;
 import models.Instituicao;
@@ -77,13 +78,21 @@ public class AlunoController extends Controller {
 	public Result consultaAluno(String idAluno) {
 		ObjectNode jsResp = Json.newObject();
 		Aluno alunoConsulta = Aluno.findByCpf(idAluno);
+
 		if (alunoConsulta != null) {
 			jsResp.put("status", 0);
 			jsResp.put("message", "Consulta bem sucedida.");
 			Instituicao inst = Instituicao.findById(alunoConsulta.getInstituicao());
-			ConsultaResponse resp = new ConsultaResponse(alunoConsulta.getNome(), "", alunoConsulta.getCpf(), "",
-					inst.getNome());
-			jsResp.put("alunoConsulta", Json.toJson(resp));
+			try {
+				ConsultaMatricula consulta = (ConsultaMatricula) Class.forName("clientesConsulta.ConsultaUFLA")
+						.newInstance();
+				ConsultaResponse resp = new ConsultaResponse(consulta.obterStatusMatricula(), "", alunoConsulta.getCpf(), "",
+						inst.getNome());
+				jsResp.put("alunoConsulta", Json.toJson(resp));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
 		} else {
 			jsResp.put("status", 1);
 			jsResp.put("message", "Usuário não cadastrado no sistema.");

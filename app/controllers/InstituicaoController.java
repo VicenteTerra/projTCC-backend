@@ -12,6 +12,7 @@ import play.mvc.Controller;
 import play.mvc.Result;
 
 public class InstituicaoController extends Controller {
+	@SuppressWarnings("deprecation")
 	public Result getAll() {
 
 		ObjectNode jsResp = Json.newObject();
