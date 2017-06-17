@@ -47,6 +47,7 @@ create table instituicao (
   cpf_representante             varchar(255),
   telefone                      varchar(255),
   senha                         varchar(255),
+  classe_consulta               varchar(255),
   constraint pk_instituicao primary key (id)
 );
 

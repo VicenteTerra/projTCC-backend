@@ -1,7 +1,10 @@
 package clientesConsulta;
 
+
+import responses.ConsultaResponse;
+
 public interface ConsultaMatricula {
-	public String obterStatusMatricula();
+	public ConsultaResponse obterStatusMatricula(String mat);
 	public String obterNomeInstituicao();
 	
 }
