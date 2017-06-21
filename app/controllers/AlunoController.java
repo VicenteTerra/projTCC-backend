@@ -1,20 +1,19 @@
 package controllers;
 
-import java.util.concurrent.CompletionStage;
-
 import javax.inject.Inject;
+
+import org.apache.commons.codec.binary.Base64;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import classesConsulta.ConsultaMatricula;
 import models.Aluno;
 import models.Estabelecimento;
 import models.Instituicao;
 import models.Usuario;
 import play.libs.Json;
 import play.libs.ws.WSClient;
-import play.libs.ws.WSRequest;
-import play.libs.ws.WSResponse;
 import play.mvc.Controller;
 import play.mvc.Result;
 import responses.ConsultaResponse;
@@ -40,6 +39,8 @@ public class AlunoController extends Controller {
 		novoAluno.setSenha(json.findValue("senha").asText());
 		novoAluno.setTipoUsuario(1);
 		novoAluno.setInstituicao(json.findValue("instituicao").asInt());
+		novoAluno.setMatricula(json.findValue("matricula").asText());
+		
 		if (json.findValue("telefone") != null) {
 			novoAluno.setTelefone(json.findValue("telefone").asText());
 		}
@@ -85,27 +86,16 @@ public class AlunoController extends Controller {
 
 	public Result consultaAluno(String idAluno) {
 		ObjectNode jsResp = Json.newObject();
-		Aluno alunoConsulta = Aluno.findByCpf(idAluno);
+		Aluno alunoConsulta = Aluno.findByMatricula(idAluno);
 
 		if (alunoConsulta != null) {
 			jsResp.put("status", 0);
 			jsResp.put("message", "Consulta bem sucedida.");
 			Instituicao inst = Instituicao.findById(alunoConsulta.getInstituicao());
 			try {
-				// ConsultaMatricula consulta = (ConsultaMatricula) Class
-				// .forName("clientesConsulta." +
-				// inst.getClasseConsulta().toUpperCase()).newInstance();
-				WSRequest request = ws.url("http://localhost:8777/ufla/consultaMatricula/" + alunoConsulta.getCpf());
-				CompletionStage<WSResponse> responsePromise = request.get();
-				CompletionStage<JsonNode> jsonPromise = responsePromise.thenApply(WSResponse::asJson);
-				ConsultaResponse resp = new ConsultaResponse(
-						jsonPromise.toCompletableFuture().get().findValue("nome").asText(),
-						jsonPromise.toCompletableFuture().get().findValue("matricula").asText(),
-						jsonPromise.toCompletableFuture().get().findValue("cpf").asText(),
-						jsonPromise.toCompletableFuture().get().findValue("situacaoMatricula").asText(),
-						inst.getNome(),
-						jsonPromise.toCompletableFuture().get().findValue("foto").asText());
-
+				ConsultaMatricula consulta = (ConsultaMatricula) Class
+						.forName("classesConsulta." + inst.getClasseConsulta().toUpperCase()).newInstance();
+				ConsultaResponse resp = consulta.obterStatusMatricula(alunoConsulta.getMatricula() , ws);
 				jsResp.put("alunoConsulta", Json.toJson(resp));
 			} catch (Exception e) {
 				e.printStackTrace();

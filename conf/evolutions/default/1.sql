@@ -7,6 +7,7 @@ create table aluno (
   id                            integer auto_increment not null,
   nome                          varchar(255),
   cpf                           varchar(255),
+   matricula                    varchar(255),
   email                         varchar(255),
   instituicao                   integer,
   data_nascimento               varchar(255),
@@ -15,6 +16,7 @@ create table aluno (
   ativo                         integer,
   tipo_usuario                  integer,
   constraint uq_aluno_cpf unique (cpf),
+  constraint uq_aluno_ matricula unique ( matricula),
   constraint uq_aluno_email unique (email),
   constraint pk_aluno primary key (id)
 );

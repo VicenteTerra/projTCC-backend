@@ -23,6 +23,9 @@ public class Aluno extends Model {
 	@Column(name = "cpf", unique = true)
 	private String cpf;
 
+	@Column(name = " matricula", unique = true)
+	private String matricula;
+
 	@Column(name = "email", unique = true)
 	private String email;
 
@@ -70,6 +73,14 @@ public class Aluno extends Model {
 
 	public void setCpf(String cpf) {
 		this.cpf = cpf;
+	}
+
+	public String getMatricula() {
+		return matricula;
+	}
+
+	public void setMatricula(String matricula) {
+		this.matricula = matricula;
 	}
 
 	public String getEmail() {
@@ -138,6 +149,10 @@ public class Aluno extends Model {
 
 	public static Aluno findByCpf(String cpfAluno) {
 		return find.where().eq("cpf", cpfAluno).eq("ativo", 1).findUnique();
+	}
+
+	public static Aluno findByMatricula(String mat) {
+		return find.where().eq("matricula", mat).findUnique();
 	}
 
 }
