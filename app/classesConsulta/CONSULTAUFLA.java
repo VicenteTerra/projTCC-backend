@@ -10,11 +10,11 @@ import play.libs.ws.WSResponse;
 import play.mvc.Controller;
 import responses.ConsultaResponse;
 
-public class CONSULTAUFLA implements ConsultaMatricula  {
+public class CONSULTAUFLA implements ConsultaMatricula {
 
-	public ConsultaResponse obterStatusMatricula(String cpf, WSClient ws) {
+	public ConsultaResponse obterStatusMatricula(String mat, WSClient ws) {
 
-		WSRequest request = ws.url("http://localhost:8777/ufla/consultaMatricula/" + cpf);
+		WSRequest request = ws.url("http://localhost:8777/ufla/consultaMatricula/" + mat);
 		CompletionStage<WSResponse> responsePromise = request.get();
 		CompletionStage<JsonNode> jsonPromise = responsePromise.thenApply(WSResponse::asJson);
 

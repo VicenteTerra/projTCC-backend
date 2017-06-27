@@ -12,7 +12,7 @@ import responses.ConsultaResponse;
 public class CONSULTAUNILAVRAS implements ConsultaMatricula {
 
 	@Override
-	public ConsultaResponse obterStatusMatricula(String mat, WSClient ws) {
+	public ConsultaResponse obterStatusMatricula(String mat ,  WSClient ws) {
 		String driverName = "com.mysql.jdbc.Driver";
 		try {
 			Class.forName(driverName);

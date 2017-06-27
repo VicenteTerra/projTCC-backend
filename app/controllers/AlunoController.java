@@ -40,7 +40,7 @@ public class AlunoController extends Controller {
 		novoAluno.setTipoUsuario(1);
 		novoAluno.setInstituicao(json.findValue("instituicao").asInt());
 		novoAluno.setMatricula(json.findValue("matricula").asText());
-		
+
 		if (json.findValue("telefone") != null) {
 			novoAluno.setTelefone(json.findValue("telefone").asText());
 		}
@@ -95,8 +95,15 @@ public class AlunoController extends Controller {
 			try {
 				ConsultaMatricula consulta = (ConsultaMatricula) Class
 						.forName("classesConsulta." + inst.getClasseConsulta().toUpperCase()).newInstance();
-				ConsultaResponse resp = consulta.obterStatusMatricula(alunoConsulta.getMatricula() , ws);
-				jsResp.put("alunoConsulta", Json.toJson(resp));
+				ConsultaResponse resp = consulta.obterStatusMatricula(alunoConsulta.getMatricula(), ws);
+				if (resp == null) {
+					jsResp.put("status", 1);
+					jsResp.put("message", "Usuário não encontrado em nenhuma instituição cadastrada!");
+				} else {
+					jsResp.put("status", 0);
+					jsResp.put("message", "ok");
+					jsResp.put("alunoConsulta", Json.toJson(resp));
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
