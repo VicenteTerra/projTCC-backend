@@ -36,6 +36,8 @@ public class Instituicao extends Model {
 	private List<Estabelecimento> estabelecimentoCredenciados;
 	@Column(name = "senha")
 	private String senha;
+	@Column(name = "classe_consulta")
+	private String classeConsulta;
 
 	public Integer getId() {
 		return id;
@@ -123,5 +125,17 @@ public class Instituicao extends Model {
 
 	public static Instituicao findById(Integer id) {
 		return find.where().eq("id", id).eq("ativo", 1).findUnique();
+	}
+
+	public String getClasseConsulta() {
+		return classeConsulta;
+	}
+
+	public void setClasseConsulta(String classeConsulta) {
+		this.classeConsulta = classeConsulta;
+	}
+
+	public static Instituicao findByEmailSenha(String email, String senha) {
+		return find.where().eq("email", email).eq("senha", senha).eq("ativo", 1).findUnique();
 	}
 }

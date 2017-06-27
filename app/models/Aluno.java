@@ -5,8 +5,6 @@ import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
 
 import com.avaje.ebean.Model;
 
@@ -25,12 +23,14 @@ public class Aluno extends Model {
 	@Column(name = "cpf", unique = true)
 	private String cpf;
 
+	@Column(name = " matricula", unique = true)
+	private String matricula;
+
 	@Column(name = "email", unique = true)
 	private String email;
 
 	@Column(name = "instituicao")
-	@OneToMany
-	private Instituicao instituicao;
+	private Integer instituicao;
 
 	@Column(name = "data_nascimento")
 	private String dataNascimento;
@@ -43,7 +43,7 @@ public class Aluno extends Model {
 
 	@Column(name = "ativo")
 	private Integer ativo = 1;
-	
+
 	@Column(name = "tipo_usuario")
 	private Integer tipoUsuario;
 
@@ -75,6 +75,14 @@ public class Aluno extends Model {
 		this.cpf = cpf;
 	}
 
+	public String getMatricula() {
+		return matricula;
+	}
+
+	public void setMatricula(String matricula) {
+		this.matricula = matricula;
+	}
+
 	public String getEmail() {
 		return email;
 	}
@@ -83,11 +91,11 @@ public class Aluno extends Model {
 		this.email = email;
 	}
 
-	public Instituicao getInstituicao() {
+	public Integer getInstituicao() {
 		return instituicao;
 	}
 
-	public void setInstituicao(Instituicao instituicao) {
+	public void setInstituicao(Integer instituicao) {
 		this.instituicao = instituicao;
 	}
 
@@ -137,6 +145,14 @@ public class Aluno extends Model {
 
 	public static Aluno findByEmailSenha(String email, String senha) {
 		return find.where().eq("email", email).eq("senha", senha).eq("ativo", 1).findUnique();
+	}
+
+	public static Aluno findByCpf(String cpfAluno) {
+		return find.where().eq("cpf", cpfAluno).eq("ativo", 1).findUnique();
+	}
+
+	public static Aluno findByMatricula(String mat) {
+		return find.where().eq("matricula", mat).findUnique();
 	}
 
 }

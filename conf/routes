@@ -4,13 +4,15 @@
 
 #Usuario
 
-POST /usuario/getTipo  controllers.UsuarioController.getUserType()
+POST /usuario/auth controllers.UsuarioController.userAuth()
+POST /usuario/logout controllers.UsuarioController.logout()
 
 #Alunos
 
 GET  /aluno/all  controllers.AlunoController.getAll()
 POST /aluno/new  controllers.AlunoController.cadastroAluno()
 POST /aluno/login controllers.AlunoController.loginAluno()
+GET /aluno/consulta/:cpfAluno controllers.AlunoController.consultaAluno(cpfAluno:String)
 
 #Estabelecimentoset
 

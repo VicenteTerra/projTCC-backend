@@ -1,17 +1,26 @@
 package controllers;
 
+import javax.inject.Inject;
+
+import org.apache.commons.codec.binary.Base64;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import classesConsulta.ConsultaMatricula;
 import models.Aluno;
 import models.Estabelecimento;
 import models.Instituicao;
 import models.Usuario;
 import play.libs.Json;
+import play.libs.ws.WSClient;
 import play.mvc.Controller;
 import play.mvc.Result;
+import responses.ConsultaResponse;
 
 public class AlunoController extends Controller {
+	@Inject
+	WSClient ws;
 
 	public Result getAll() {
 		return ok(Json.toJson(Aluno.findAll()));
@@ -29,8 +38,9 @@ public class AlunoController extends Controller {
 		novoAluno.setDataNascimento(json.findValue("dataNascimento").asText());
 		novoAluno.setSenha(json.findValue("senha").asText());
 		novoAluno.setTipoUsuario(1);
-		Instituicao inst = Instituicao.findById(json.findValue("instituicao").asInt());
-		novoAluno.setInstituicao(inst);
+		novoAluno.setInstituicao(json.findValue("instituicao").asInt());
+		novoAluno.setMatricula(json.findValue("matricula").asText());
+
 		if (json.findValue("telefone") != null) {
 			novoAluno.setTelefone(json.findValue("telefone").asText());
 		}
@@ -41,7 +51,7 @@ public class AlunoController extends Controller {
 			newUser.setTipo(2);
 			newUser.setDescricao("Aluno");
 			newUser.save();
-			
+
 			jsResp.put("status", 0);
 			jsResp.put("message", "Cadastrado com sucesso!");
 		} catch (Exception e) {
@@ -70,6 +80,37 @@ public class AlunoController extends Controller {
 		} else {
 			jsResp.put("status", 1);
 			jsResp.put("message", "Usuário não encontrado!");
+		}
+		return ok(jsResp);
+	}
+
+	public Result consultaAluno(String idAluno) {
+		ObjectNode jsResp = Json.newObject();
+		Aluno alunoConsulta = Aluno.findByMatricula(idAluno);
+
+		if (alunoConsulta != null) {
+			jsResp.put("status", 0);
+			jsResp.put("message", "Consulta bem sucedida.");
+			Instituicao inst = Instituicao.findById(alunoConsulta.getInstituicao());
+			try {
+				ConsultaMatricula consulta = (ConsultaMatricula) Class
+						.forName("classesConsulta." + inst.getClasseConsulta().toUpperCase()).newInstance();
+				ConsultaResponse resp = consulta.obterStatusMatricula(alunoConsulta.getMatricula(), ws);
+				if (resp == null) {
+					jsResp.put("status", 1);
+					jsResp.put("message", "Usuário não encontrado em nenhuma instituição cadastrada!");
+				} else {
+					jsResp.put("status", 0);
+					jsResp.put("message", "ok");
+					jsResp.put("alunoConsulta", Json.toJson(resp));
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+		} else {
+			jsResp.put("status", 1);
+			jsResp.put("message", "Usuário não cadastrado no sistema.");
 		}
 		return ok(jsResp);
 	}
