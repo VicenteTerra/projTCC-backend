@@ -18,9 +18,8 @@ public class UsuarioController extends Controller {
 		JsonNode json = request().body().asJson();
 		String email = json.findValue("userName").asText();
 		String senha = json.findValue("password").asText();
-
 		Usuario user = Usuario.getUserByLogin(email);
-
+		
 		if (user != null) {
 			if (user.getTipo() == 0) {
 				Instituicao inst = Instituicao.findByEmailSenha(email, senha);

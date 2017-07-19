@@ -57,6 +57,22 @@ public class Estabelecimento extends Model {
 	@Column(name = "senha")
 	private String senha;
 
+	public static Estabelecimento findById(Integer id) {
+		return find.where().eq("id", id).eq("ativo", 1).findUnique();
+	}
+
+	public static List<Estabelecimento> findAll() {
+		return find.where().eq("ativo", 1).findList();
+	}
+
+	public static Estabelecimento findByEmailSenha(String email, String senha) {
+		return find.where().eq("email", email).eq("senha", senha).eq("ativo", 1).findUnique();
+	}
+
+	public static Estabelecimento findByCnpj(String cnpj) {
+		return find.where().eq("ativo", 1).eq("cnpj", cnpj).findUnique();
+	}
+
 	public Integer getId() {
 		return id;
 	}
@@ -153,15 +169,4 @@ public class Estabelecimento extends Model {
 		this.senha = senha;
 	}
 
-	public static List<Estabelecimento> findAll() {
-		return find.where().eq("ativo", 1).findList();
-	}
-
-	public static Estabelecimento findByEmailSenha(String email, String senha) {
-		return find.where().eq("email", email).eq("senha", senha).eq("ativo", 1).findUnique();
-	}
-
-	public static Estabelecimento findByCnpj(String cnpj) {
-		return find.where().eq("ativo", 1).eq("cnpj", cnpj).findUnique();
-	}
 }

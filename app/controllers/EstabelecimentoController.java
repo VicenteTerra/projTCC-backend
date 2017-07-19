@@ -1,29 +1,36 @@
 package controllers;
 
-
 import java.io.FileNotFoundException;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import models.Documento;
 import models.Estabelecimento;
+import models.Instituicao;
 import models.Usuario;
 import play.libs.Json;
 import play.mvc.Controller;
 
 import play.mvc.Result;
+import responses.EstabelecimentoResponse;
 
 public class EstabelecimentoController extends Controller {
 
 	public Result getAll() {
-		return ok(Json.toJson(Estabelecimento.findAll()));
+		ObjectNode jsResp = Json.newObject();
+		jsResp.put("status", 0);
+		jsResp.put("message", "ok");
+		jsResp.put("listaEstabelecimento", Json.toJson(Estabelecimento.findAll()));
+		return ok(jsResp);
 	}
 
 	public Result uploadFile() throws FileNotFoundException, IOException {
