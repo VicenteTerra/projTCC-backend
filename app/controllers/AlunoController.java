@@ -84,7 +84,7 @@ public class AlunoController extends Controller {
 		return ok(jsResp);
 	}
 
-	public Result consultaAluno(String idAluno) {
+	public Result consultaAluno(String idAluno, Integer idEstab) {
 		ObjectNode jsResp = Json.newObject();
 		Aluno alunoConsulta = Aluno.findByMatricula(idAluno);
 
@@ -92,17 +92,24 @@ public class AlunoController extends Controller {
 			jsResp.put("status", 0);
 			jsResp.put("message", "Consulta bem sucedida.");
 			Instituicao inst = Instituicao.findById(alunoConsulta.getInstituicao());
+			Estabelecimento estab = Estabelecimento.findById(idEstab);
 			try {
-				ConsultaMatricula consulta = (ConsultaMatricula) Class
-						.forName("classesConsulta." + inst.getClasseConsulta().toUpperCase()).newInstance();
-				ConsultaResponse resp = consulta.obterStatusMatricula(alunoConsulta.getMatricula(), ws);
-				if (resp == null) {
-					jsResp.put("status", 1);
-					jsResp.put("message", "Usuário não encontrado em nenhuma instituição cadastrada!");
+				if (inst.getEstabelecimentoCredenciados().contains(estab)) {
+					ConsultaMatricula consulta = (ConsultaMatricula) Class
+							.forName("classesConsulta." + inst.getClasseConsulta().toUpperCase()).newInstance();
+					ConsultaResponse resp = consulta.obterStatusMatricula(alunoConsulta.getMatricula(), ws);
+					if (resp == null) {
+						jsResp.put("status", 1);
+						jsResp.put("message", "Usuário não encontrado em nenhuma instituição cadastrada!");
+					} else {
+						jsResp.put("status", 0);
+						jsResp.put("message", "ok");
+						jsResp.put("alunoConsulta", Json.toJson(resp));
+					}
 				} else {
-					jsResp.put("status", 0);
-					jsResp.put("message", "ok");
-					jsResp.put("alunoConsulta", Json.toJson(resp));
+					jsResp.put("status", 1);
+					jsResp.put("message",
+							"Este estabelecimento não tem autorização consultar dados da instituição deste aluno!");
 				}
 			} catch (Exception e) {
 				e.printStackTrace();

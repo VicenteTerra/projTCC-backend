@@ -116,17 +116,25 @@ public class InstituicaoController extends Controller {
 				respList.add(resp);
 			}
 		} else {
-			for (Estabelecimento estab1 : instituicao.getEstabelecimentoCredenciados()) {
-				for (Estabelecimento estab2 : estabelecimentos) {
+
+			for (Estabelecimento estab2 : estabelecimentos) {
+				for (Estabelecimento estab1 : instituicao.getEstabelecimentoCredenciados()) {
 					if (estab2.getId() == estab1.getId()) {
 						EstabelecimentoResponse resp = new EstabelecimentoResponse(true, estab2);
-						respList.add(resp);
-					} else {
-						EstabelecimentoResponse resp = new EstabelecimentoResponse(false, estab2);
 						respList.add(resp);
 					}
 				}
 			}
+
+			if (respList.size() < estabelecimentos.size())
+				for (Estabelecimento estab2 : estabelecimentos) {
+					for (Estabelecimento estab1 : instituicao.getEstabelecimentoCredenciados()) {
+						if (estab2.getId() != estab1.getId()) {
+							EstabelecimentoResponse resp = new EstabelecimentoResponse(false, estab2);
+							respList.add(resp);
+						}
+					}
+				}
 		}
 		jsResp.put("status", 0);
 		jsResp.put("message", "ok");
