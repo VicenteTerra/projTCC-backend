@@ -14,6 +14,7 @@ import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Result;
 import responses.EstabelecimentoResponse;
+import responses.InstituicaoResponse;
 
 public class InstituicaoController extends Controller {
 	@SuppressWarnings("deprecation")
@@ -22,9 +23,13 @@ public class InstituicaoController extends Controller {
 		ObjectNode jsResp = Json.newObject();
 		try {
 			List<Instituicao> instituicoes = Instituicao.getAllAtivo();
+			List<InstituicaoResponse> respList = new ArrayList<>();
+			for (Instituicao inst : instituicoes) {
+				respList.add(new InstituicaoResponse(inst));
+			}
 			jsResp.put("status", 0);
 			jsResp.put("message", "Busca realizada com sucesso!");
-			jsResp.put("listaInstituicoes", Json.toJson(instituicoes));
+			jsResp.put("listaInstituicoes", Json.toJson(respList));
 		} catch (Exception e) {
 			jsResp.put("status", 1);
 			jsResp.put("message", "Falha ao busca lista de insituições!");

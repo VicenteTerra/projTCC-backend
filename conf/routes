@@ -13,6 +13,9 @@ GET  /aluno/all  controllers.AlunoController.getAll()
 POST /aluno/new  controllers.AlunoController.cadastroAluno()
 POST /aluno/login controllers.AlunoController.loginAluno()
 GET /aluno/consulta/:cpfAluno/:idEstab controllers.AlunoController.consultaAluno(cpfAluno:String,idEstab:Integer)
+GET /aluno/:idAluno   controllers.AlunoController.getAlunoById(idAluno:Integer)
+POST /aluno/update controllers.AlunoController.updateAluno()
+GET /aluno/changeAtivo/:id   controllers.AlunoController.changeAtivo(id:Integer)
 
 #Estabelecimentoset
 

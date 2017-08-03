@@ -144,7 +144,7 @@ public class Aluno extends Model {
 	}
 
 	public static Aluno findByEmailSenha(String email, String senha) {
-		return find.where().eq("email", email).eq("senha", senha).eq("ativo", 1).findUnique();
+		return find.where().eq("email", email).eq("senha", senha).findUnique();
 	}
 
 	public static Aluno findByCpf(String cpfAluno) {
@@ -155,4 +155,10 @@ public class Aluno extends Model {
 		return find.where().eq("matricula", mat).findUnique();
 	}
 
+	public static Aluno findByIdAtivo(Integer id) {
+		return find.where().eq("ativo", 1).eq("id", id).findUnique();
+	}
+	public static Aluno findById(Integer id) {
+		return find.where().eq("id", id).findUnique();
+	}
 }

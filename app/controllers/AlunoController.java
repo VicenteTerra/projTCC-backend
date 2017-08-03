@@ -16,6 +16,7 @@ import play.libs.Json;
 import play.libs.ws.WSClient;
 import play.mvc.Controller;
 import play.mvc.Result;
+import responses.AlunoResponse;
 import responses.ConsultaResponse;
 
 public class AlunoController extends Controller {
@@ -24,6 +25,17 @@ public class AlunoController extends Controller {
 
 	public Result getAll() {
 		return ok(Json.toJson(Aluno.findAll()));
+	}
+
+	public Result getAlunoById(Integer idAluno) {
+		ObjectNode jsResp = Json.newObject();
+		Aluno aluno = Aluno.findById(idAluno);
+		Instituicao inst = Instituicao.findById(aluno.getInstituicao());
+		AlunoResponse resp = new AlunoResponse(aluno, inst);
+		jsResp.put("status", 0);
+		jsResp.put("message", "ok");
+		jsResp.put("aluno", Json.toJson(resp));
+		return ok(jsResp);
 	}
 
 	public Result cadastroAluno() {
@@ -59,6 +71,45 @@ public class AlunoController extends Controller {
 			jsResp.put("message", "Erro no cadastro:  " + e.getMessage());
 		}
 
+		return ok(jsResp);
+	}
+
+	public Result updateAluno() {
+		ObjectNode jsResp = Json.newObject();
+		JsonNode json = request().body().asJson();
+		String mat = json.findValue("matricula").asText();
+		Aluno aluno = Aluno.findById(json.findValue("id").asInt());
+		aluno.setNome(json.findValue("nome").asText());
+		aluno.setInstituicao(json.findValue("instituicaoId").asInt());
+		Aluno alunoCheck = Aluno.findByMatricula(mat);
+		if (alunoCheck == null || alunoCheck.getId() == aluno.getId()) {
+			aluno.setMatricula(mat);
+			aluno.update();
+			jsResp.put("status", 0);
+			jsResp.put("message", "Dados atualizados com sucesso!");
+		} else {
+			jsResp.put("status", 1);
+			jsResp.put("message", "Ops! Já existe um usuário cadastrado com essa matrícula.");
+		}
+
+		return ok(jsResp);
+	}
+
+	public Result changeAtivo(Integer id) {
+		ObjectNode jsResp = Json.newObject();
+		Aluno aluno = Aluno.findById(id);
+		if (aluno.getAtivo() == 1) {
+			aluno.setAtivo(0);
+			aluno.update();
+			jsResp.put("status", 1);
+			jsResp.put("message",
+					"Conta desativada com sucesso! ATENÇÃO: Devido a esta ação você não poderá confirmar o status de sua matrícula por meio desta aplicação.");
+		} else {
+			aluno.setAtivo(1);
+			aluno.update();
+			jsResp.put("status", 0);
+			jsResp.put("message", "Conta ativada com sucesso! ");
+		}
 		return ok(jsResp);
 	}
 
