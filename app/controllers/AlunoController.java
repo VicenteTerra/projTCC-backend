@@ -151,7 +151,7 @@ public class AlunoController extends Controller {
 					ConsultaResponse resp = consulta.obterStatusMatricula(alunoConsulta.getMatricula(), ws);
 					if (resp == null) {
 						jsResp.put("status", 1);
-						jsResp.put("message", "Usuário não encontrado em nenhuma instituição cadastrada!");
+						jsResp.put("message", "Usuário não encontrado em nenhuma instituição cadastrada ou sua conta está desativada!");
 					} else {
 						jsResp.put("status", 0);
 						jsResp.put("message", "ok");
