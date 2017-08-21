@@ -37,19 +37,21 @@ public class EstabelecimentoController extends Controller {
 		JsonNode json = request().body().asJson();
 
 		byte[] data = Base64.getDecoder().decode(json.findValue("base64").asText().getBytes());
-		Path destinationFile = Paths.get("/home/vicente/userFiles/" + json.findValue("filename").asText());
+		Path destinationFile = Paths.get("/userFiles/" + json.findValue("filename").asText());
 		Files.write(destinationFile, data);
 
 		return ok();
 	}
 
-	public Result cadastroEstabelecimento() {
+	public Result cadastroEstabelecimento() throws IOException {
 
 		ObjectNode jsResp = Json.newObject();
 		JsonNode json = request().body().asJson();
 		String cnpj = json.findValue("cnpj").asText();
 
 		Estabelecimento estabelecimento = new Estabelecimento();
+		Usuario newUser = new Usuario();
+		
 		estabelecimento.setNome(json.findValue("nome").asText());
 		estabelecimento.setCnpj(cnpj);
 		estabelecimento.setEmail(json.findValue("email").asText());
@@ -65,17 +67,21 @@ public class EstabelecimentoController extends Controller {
 			estabelecimento.setTipoEtabelecimento(2);
 		if (json.findValue("tipoEstabelecimento").asText().equals("Transporte"))
 			estabelecimento.setTipoEtabelecimento(3);
-
 		try {
 			estabelecimento.save();
-			Usuario newUser = new Usuario();
 			newUser.setLogin(estabelecimento.getEmail());
 			newUser.setTipo(1);
 			newUser.setDescricao("Estabelecimento");
 			newUser.save();
-			Estabelecimento estab = Estabelecimento.findByCnpj(cnpj);
-			JsonNode files = json.findValue("files");
+		} catch (Exception e) {
+			jsResp.put("status", 1);
+			jsResp.put("message", e.getMessage());
+			return ok(jsResp);
+		}
 
+		Estabelecimento estab = Estabelecimento.findByCnpj(cnpj);
+		JsonNode files = json.findValue("files");
+		try {
 			for (JsonNode js : files) {
 				Documento newDoc = new Documento();
 				newDoc.setBase64(js.findValue("base64").asText());
@@ -85,21 +91,24 @@ public class EstabelecimentoController extends Controller {
 				newDoc.setOwnerID(estab.getId());
 
 				byte[] data = Base64.getDecoder().decode(newDoc.getBase64().getBytes());
-				if (!Files.exists(Paths.get("/home/vicente/userFiles/" + estab.getCnpj()))) {
-					Files.createDirectory(Paths.get("/home/vicente/userFiles/" + estab.getCnpj()));
+				if (!Files.exists(Paths.get("/userFiles/" + estab.getCnpj()))) {
+					Files.createDirectory(Paths.get("/userFiles/" + estab.getCnpj()));
 				}
-				Path destinationFile = Paths
-						.get("/home/vicente/userFiles/" + estab.getCnpj() + "/" + newDoc.getFilename());
+				Path destinationFile = Paths.get("/userFiles/" + estab.getCnpj() + "/" + newDoc.getFilename());
 				Files.write(destinationFile, data);
 				newDoc.save();
 			}
-
-			jsResp.put("status", 0);
-			jsResp.put("message", "Cadastrado com sucesso!");
 		} catch (Exception e) {
+			estabelecimento.delete();
+			newUser.delete();
 			jsResp.put("status", 1);
-			jsResp.put("message", "Erro no cadastro:  " + e.getMessage());
+			jsResp.put("message", "Ocorreu algum problema interno com o sistema! ");
+			return ok(jsResp);
 		}
+
+		jsResp.put("status", 0);
+		jsResp.put("message", "Cadastrado com sucesso!");
+
 		return ok(jsResp);
 	}
 }

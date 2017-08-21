@@ -160,7 +160,7 @@ public class AlunoController extends Controller {
 				} else {
 					jsResp.put("status", 1);
 					jsResp.put("message",
-							"Este estabelecimento não tem autorização consultar dados da instituição deste aluno!");
+							"Este estabelecimento não tem autorização para consultar dados da instituição deste aluno!");
 				}
 			} catch (Exception e) {
 				e.printStackTrace();

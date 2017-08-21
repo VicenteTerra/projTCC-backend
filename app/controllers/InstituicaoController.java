@@ -50,6 +50,7 @@ public class InstituicaoController extends Controller {
 		instituicao.setTelefone(json.findValue("telefone").asText());
 		instituicao.setCpfRepresentante(json.findValue("cpfResponsavel").asText());
 		instituicao.setNomeRepresentante(json.findValue("nomeResponsavel").asText());
+		instituicao.setClasseConsulta(json.findValue("classeConsulta").asText());
 
 		try {
 			instituicao.save();
@@ -87,7 +88,7 @@ public class InstituicaoController extends Controller {
 		ObjectNode jsResp = Json.newObject();
 
 		List<String> results = new ArrayList<String>();
-		File[] files = new File("/home/vicente/userFiles/" + cnpj).listFiles();
+		File[] files = new File("/userFiles/" + cnpj).listFiles();
 		for (File file : files) {
 			if (file.isFile()) {
 				results.add(file.getName());
@@ -102,7 +103,7 @@ public class InstituicaoController extends Controller {
 		ObjectNode jsResp = Json.newObject();
 		response().setContentType("application/pdf");
 		try {
-			File fileToDownload = new File("/home/vicente/userFiles/" + cnpj + "/" + fileName);
+			File fileToDownload = new File("/userFiles/" + cnpj + "/" + fileName);
 			return ok(fileToDownload);
 		} catch (Exception e) {
 			e.printStackTrace();
