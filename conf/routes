@@ -17,17 +17,20 @@ GET /aluno/:idAluno   controllers.AlunoController.getAlunoById(idAluno:Integer)
 POST /aluno/update controllers.AlunoController.updateAluno()
 GET /aluno/changeAtivo/:id   controllers.AlunoController.changeAtivo(id:Integer)
 
-#Estabelecimentoset
+#Estabelecimentos
 
 GET /estabelecimento/all controllers.EstabelecimentoController.getAll()
 POST /estabelecimento/new controllers.EstabelecimentoController.cadastroEstabelecimento()
+GET /estabelecimento/autorizacoes/:id  controllers.EstabelecimentoController.getStatusCadastroInstituicao(id:Integer)
+GET /estabelecimento/:id   controllers.EstabelecimentoController.getEstabelecimento(id:Integer)
+POST /estabelecimento/update  controllers.EstabelecimentoController.updateEstabelecimento()
 
 #Instituições
 
 GET /instituicao/all controllers.InstituicaoController.getAll()
 POST /instituicao/new  controllers.InstituicaoController.cadastroInstituicao()
-GET /instituicao/autorizaEstabelecimento/:idEstab/:idInst 			controllers.InstituicaoController.autorizaEstabelecimento(idEstab:Integer , idInst:Integer)
-GET /instituicao/desautorizaEstabelecimento/:idEstab/:idInst 			controllers.InstituicaoController.desautorizaEstabelecimento(idEstab:Integer , idInst:Integer)
+POST /instituicao/autorizaEstabelecimento		controllers.InstituicaoController.autorizaEstabelecimento()
+POST /instituicao/desautorizaEstabelecimento		controllers.InstituicaoController.desautorizaEstabelecimento()
 GET  /instituicao/downloadDoc/:cnpj/:fileName						controllers.InstituicaoController.downloadDoc(cnpj:String , fileName:String)
 GET /instituicao/listFilesEstabelecimento/:cnpj   		controllers.InstituicaoController.listFilesEstabelecimento(cnpj:String)
 GET /instituicao/getEstabelecimentosInst/:id   controllers.InstituicaoController.getEstabelecimentosInst(id:Integer)

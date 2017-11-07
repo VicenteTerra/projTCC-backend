@@ -1,5 +1,6 @@
 package responses;
 
+import models.AutorizaEstabelecimento;
 import models.Estabelecimento;
 
 public class EstabelecimentoResponse {
@@ -8,15 +9,34 @@ public class EstabelecimentoResponse {
 	private String nome;
 	private String cnpj;
 	private String email;
-	private boolean autorizado = false;
+	private String nomeResponsavel;
+	private String cpfResponsavel;
+	private String telefone;
+	private String endereco;
 
-	public EstabelecimentoResponse(boolean autoriza, Estabelecimento estab) {
+	private AutorizaEstabelecimento autorizacao;
+
+	public EstabelecimentoResponse(AutorizaEstabelecimento auto, Estabelecimento estab) {
 		this.id = estab.getId();
 		this.nome = estab.getNome();
 		this.cnpj = estab.getCnpj();
 		this.email = estab.getEmail();
-		if (autoriza)
-			this.autorizado = true;
+		this.nomeResponsavel = estab.getNomeResponsavel();
+		this.cpfResponsavel = estab.getCpfResponsavel();
+		this.telefone = estab.getTelefone();
+		this.endereco = estab.getEndereco();
+		this.autorizacao = auto;
+	}
+
+	public EstabelecimentoResponse(Estabelecimento estab) {
+		this.id = estab.getId();
+		this.nome = estab.getNome();
+		this.cnpj = estab.getCnpj();
+		this.email = estab.getEmail();
+		this.nomeResponsavel = estab.getNomeResponsavel();
+		this.cpfResponsavel = estab.getCpfResponsavel();
+		this.telefone = estab.getTelefone();
+		this.endereco = estab.getEndereco();
 	}
 
 	public Integer getId() {
@@ -51,11 +71,44 @@ public class EstabelecimentoResponse {
 		this.email = email;
 	}
 
-	public boolean isAutorizado() {
-		return autorizado;
+	public String getNomeResponsavel() {
+		return nomeResponsavel;
 	}
 
-	public void setAutorizado(boolean autorizado) {
-		this.autorizado = autorizado;
+	public void setNomeResponsavel(String nomeResponsavel) {
+		this.nomeResponsavel = nomeResponsavel;
 	}
+
+	public String getCpfResponsavel() {
+		return cpfResponsavel;
+	}
+
+	public void setCpfResponsavel(String cpfResponsavel) {
+		this.cpfResponsavel = cpfResponsavel;
+	}
+
+	public String getTelefone() {
+		return telefone;
+	}
+
+	public void setTelefone(String telefone) {
+		this.telefone = telefone;
+	}
+
+	public String getEndereco() {
+		return endereco;
+	}
+
+	public void setEndereco(String endereco) {
+		this.endereco = endereco;
+	}
+
+	public AutorizaEstabelecimento getAutorizacao() {
+		return autorizacao;
+	}
+
+	public void setAutorizacao(AutorizaEstabelecimento autorizacao) {
+		this.autorizacao = autorizacao;
+	}
+
 }

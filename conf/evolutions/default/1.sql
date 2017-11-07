@@ -68,6 +68,15 @@ create table usuario (
   constraint pk_usuario primary key (id)
 );
 
+create table autoriza_estabelecimento (
+  id                            integer auto_increment not null,
+  id_instituicao                integer,
+  id_estabelecimento            integer,
+  status                        integer,
+  mensagem                      varchar(255),
+  constraint pk_autoriza_estabelecimento primary key (id)
+);
+
 create table documento (
   id                            integer auto_increment not null,
   owner_id                      integer,
@@ -102,6 +111,8 @@ drop table if exists instituicao;
 drop table if exists instituicao_estabelecimento;
 
 drop table if exists usuario;
+
+drop table if exists autoriza_estabelecimento;
 
 drop table if exists documento;
 

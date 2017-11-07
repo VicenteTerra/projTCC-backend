@@ -7,6 +7,7 @@ import java.util.List;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import models.AutorizaEstabelecimento;
 import models.Estabelecimento;
 import models.Instituicao;
 import models.Usuario;
@@ -68,20 +69,32 @@ public class InstituicaoController extends Controller {
 		return ok(jsResp);
 	}
 
-	public Result autorizaEstabelecimento(Integer idEstab, Integer idInst) {
-		Instituicao inst = Instituicao.findById(idInst);
-		Estabelecimento estab = Estabelecimento.findById(idEstab);
-		inst.getEstabelecimentoCredenciados().add(estab);
-		inst.update();
-		return ok();
+	public Result autorizaEstabelecimento() {
+		ObjectNode jsResp = Json.newObject();
+		JsonNode json = request().body().asJson();
+		Integer idEstab = json.findValue("idEstabelecimento").asInt();
+		Integer idInst = json.findValue("idInstituicao").asInt();
+		AutorizaEstabelecimento auto = AutorizaEstabelecimento.getAutorizacoesByEstabelecimentoInstituicao(idEstab,
+				idInst);
+		auto.setStatus(1);
+		auto.update();
+		jsResp.put("status", 0);
+		return ok(jsResp);
 	}
 
-	public Result desautorizaEstabelecimento(Integer idEstab, Integer idInst) {
-		Instituicao inst = Instituicao.findById(idInst);
-		Estabelecimento estab = Estabelecimento.findById(idEstab);
-		inst.getEstabelecimentoCredenciados().remove(estab);
-		inst.update();
-		return ok();
+	public Result desautorizaEstabelecimento() {
+		ObjectNode jsResp = Json.newObject();
+		JsonNode json = request().body().asJson();
+		Integer idEstab = json.findValue("idEstabelecimento").asInt();
+		Integer idInst = json.findValue("idInstituicao").asInt();
+		String msg = json.findValue("msg").asText();
+		AutorizaEstabelecimento auto = AutorizaEstabelecimento.getAutorizacoesByEstabelecimentoInstituicao(idEstab,
+				idInst);
+		auto.setStatus(2);
+		auto.setMensagem(msg);
+		auto.update();
+		jsResp.put("status", 0);
+		return ok(jsResp);
 	}
 
 	public Result listFilesEstabelecimento(String cnpj) {
@@ -113,35 +126,15 @@ public class InstituicaoController extends Controller {
 
 	public Result getEstabelecimentosInst(Integer id) {
 		ObjectNode jsResp = Json.newObject();
-		List<Estabelecimento> estabelecimentos = Estabelecimento.findAll();
-		Instituicao instituicao = Instituicao.findById(id);
 		List<EstabelecimentoResponse> respList = new ArrayList<>();
-		if (instituicao.getEstabelecimentoCredenciados().size() == 0) {
-			for (Estabelecimento estab2 : estabelecimentos) {
-				EstabelecimentoResponse resp = new EstabelecimentoResponse(false, estab2);
-				respList.add(resp);
-			}
-		} else {
+		List<AutorizaEstabelecimento> autorizacoes = AutorizaEstabelecimento.getAutorizacoesByInstituicao(id);
 
-			for (Estabelecimento estab2 : estabelecimentos) {
-				for (Estabelecimento estab1 : instituicao.getEstabelecimentoCredenciados()) {
-					if (estab2.getId() == estab1.getId()) {
-						EstabelecimentoResponse resp = new EstabelecimentoResponse(true, estab2);
-						respList.add(resp);
-					}
-				}
-			}
-
-			if (respList.size() < estabelecimentos.size())
-				for (Estabelecimento estab2 : estabelecimentos) {
-					for (Estabelecimento estab1 : instituicao.getEstabelecimentoCredenciados()) {
-						if (estab2.getId() != estab1.getId()) {
-							EstabelecimentoResponse resp = new EstabelecimentoResponse(false, estab2);
-							respList.add(resp);
-						}
-					}
-				}
+		for (AutorizaEstabelecimento auto : autorizacoes) {
+			EstabelecimentoResponse resp = new EstabelecimentoResponse(auto,
+					Estabelecimento.findById(auto.getIdEstabelecimento()));
+			respList.add(resp);
 		}
+
 		jsResp.put("status", 0);
 		jsResp.put("message", "ok");
 		jsResp.put("listaEstabelecimentos", Json.toJson(respList));

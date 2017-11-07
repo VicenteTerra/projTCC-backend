@@ -8,11 +8,13 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import models.AutorizaEstabelecimento;
 import models.Documento;
 import models.Estabelecimento;
 import models.Instituicao;
@@ -30,6 +32,80 @@ public class EstabelecimentoController extends Controller {
 		jsResp.put("status", 0);
 		jsResp.put("message", "ok");
 		jsResp.put("listaEstabelecimento", Json.toJson(Estabelecimento.findAll()));
+		return ok(jsResp);
+	}
+
+	public Result updateEstabelecimento() {
+		ObjectNode jsResp = Json.newObject();
+		JsonNode json = request().body().asJson();
+		Estabelecimento estabelecimento = Estabelecimento.findById(json.findValue("id").asInt());
+
+		estabelecimento.setNome(json.findValue("nome").asText());
+		estabelecimento.setCnpj(json.findValue("cnpj").asText());
+		estabelecimento.setEmail(json.findValue("email").asText());
+		estabelecimento.setEndereco(json.findValue("endereco").asText());
+		estabelecimento.setTelefone(json.findValue("telefone").asText());
+		estabelecimento.setCpfResponsavel(json.findValue("cpfResponsavel").asText());
+		estabelecimento.setNomeResponsavel(json.findValue("nomeResponsavel").asText());
+		estabelecimento.update();
+
+		JsonNode files = json.findValue("files");
+		if (files != null && files.size() > 0) {
+			try {
+				for (JsonNode js : files) {
+					Documento newDoc = new Documento();
+					newDoc.setBase64(js.findValue("base64").asText());
+					newDoc.setFilename(js.findValue("filename").asText());
+					newDoc.setFiletype(js.findValue("filetype").asText());
+					newDoc.setFilesize(js.findValue("filesize").asInt());
+					newDoc.setOwnerID(estabelecimento.getId());
+
+					byte[] data = Base64.getDecoder().decode(newDoc.getBase64().getBytes());
+					if (!Files.exists(Paths.get("/userFiles/" + estabelecimento.getCnpj()))) {
+						Files.createDirectory(Paths.get("/userFiles/" + estabelecimento.getCnpj()));
+					}
+					Path destinationFile = Paths
+							.get("/userFiles/" + estabelecimento.getCnpj() + "/" + newDoc.getFilename());
+					Files.write(destinationFile, data);
+					newDoc.save();
+				}
+			} catch (Exception e) {
+				jsResp.put("status", 1);
+				jsResp.put("message" , "Erro interno: Contate o suporte.");
+				return ok(jsResp);
+			}
+		}
+		jsResp.put("status", 0);
+		jsResp.put("message", "Dados atualizados com sucesso!");
+		return ok(jsResp);
+	}
+
+	public Result getEstabelecimento(Integer id) {
+		ObjectNode jsResp = Json.newObject();
+		EstabelecimentoResponse resp = new EstabelecimentoResponse(Estabelecimento.findById(id));
+		jsResp.put("status", 0);
+		jsResp.put("message", "ok");
+		jsResp.put("estabelecimento", Json.toJson(resp));
+		return ok(jsResp);
+	}
+
+	public Result getStatusCadastroInstituicao(Integer id) {
+		ObjectNode jsResp = Json.newObject();
+		List<AutorizaEstabelecimento> autorizacoes = AutorizaEstabelecimento.getAutorizacoesByEstabelecimento(id);
+		HashMap<String, Object> data;
+		List<HashMap<String, Object>> result = new ArrayList<>();
+
+		for (AutorizaEstabelecimento auto : autorizacoes) {
+			data = new HashMap<>();
+			data.put("estabelecimentoNome", Instituicao.findById(auto.getIdInstituicao()).getNome());
+			data.put("statusAutorizacao", auto.getStatus());
+			data.put("mensagemAutorizacao", auto.getMensagem());
+			result.add(data);
+		}
+
+		jsResp.put("status", 0);
+		jsResp.put("message", "ok");
+		jsResp.put("autorizacoes", Json.toJson(result));
 		return ok(jsResp);
 	}
 
@@ -51,7 +127,7 @@ public class EstabelecimentoController extends Controller {
 
 		Estabelecimento estabelecimento = new Estabelecimento();
 		Usuario newUser = new Usuario();
-		
+
 		estabelecimento.setNome(json.findValue("nome").asText());
 		estabelecimento.setCnpj(cnpj);
 		estabelecimento.setEmail(json.findValue("email").asText());
@@ -69,6 +145,13 @@ public class EstabelecimentoController extends Controller {
 			estabelecimento.setTipoEtabelecimento(3);
 		try {
 			estabelecimento.save();
+			List<Instituicao> instituicoes = Instituicao.find.all();
+			for (Instituicao inst : instituicoes) {
+				AutorizaEstabelecimento auto = new AutorizaEstabelecimento();
+				auto.setIdEstabelecimento(estabelecimento.getId());
+				auto.setIdInstituicao(inst.getId());
+				auto.save();
+			}
 			newUser.setLogin(estabelecimento.getEmail());
 			newUser.setTipo(1);
 			newUser.setDescricao("Estabelecimento");
@@ -79,31 +162,33 @@ public class EstabelecimentoController extends Controller {
 			return ok(jsResp);
 		}
 
-		Estabelecimento estab = Estabelecimento.findByCnpj(cnpj);
 		JsonNode files = json.findValue("files");
-		try {
-			for (JsonNode js : files) {
-				Documento newDoc = new Documento();
-				newDoc.setBase64(js.findValue("base64").asText());
-				newDoc.setFilename(js.findValue("filename").asText());
-				newDoc.setFiletype(js.findValue("filetype").asText());
-				newDoc.setFilesize(js.findValue("filesize").asInt());
-				newDoc.setOwnerID(estab.getId());
+		if (files.size() > 0) {
+			try {
+				for (JsonNode js : files) {
+					Documento newDoc = new Documento();
+					newDoc.setBase64(js.findValue("base64").asText());
+					newDoc.setFilename(js.findValue("filename").asText());
+					newDoc.setFiletype(js.findValue("filetype").asText());
+					newDoc.setFilesize(js.findValue("filesize").asInt());
+					newDoc.setOwnerID(estabelecimento.getId());
 
-				byte[] data = Base64.getDecoder().decode(newDoc.getBase64().getBytes());
-				if (!Files.exists(Paths.get("/userFiles/" + estab.getCnpj()))) {
-					Files.createDirectory(Paths.get("/userFiles/" + estab.getCnpj()));
+					byte[] data = Base64.getDecoder().decode(newDoc.getBase64().getBytes());
+					if (!Files.exists(Paths.get("/userFiles/" + estabelecimento.getCnpj()))) {
+						Files.createDirectory(Paths.get("/userFiles/" + estabelecimento.getCnpj()));
+					}
+					Path destinationFile = Paths
+							.get("/userFiles/" + estabelecimento.getCnpj() + "/" + newDoc.getFilename());
+					Files.write(destinationFile, data);
+					newDoc.save();
 				}
-				Path destinationFile = Paths.get("/userFiles/" + estab.getCnpj() + "/" + newDoc.getFilename());
-				Files.write(destinationFile, data);
-				newDoc.save();
+			} catch (Exception e) {
+				estabelecimento.delete();
+				newUser.delete();
+				jsResp.put("status", 1);
+				jsResp.put("message", e.getMessage());
+				return ok(jsResp);
 			}
-		} catch (Exception e) {
-			estabelecimento.delete();
-			newUser.delete();
-			jsResp.put("status", 1);
-			jsResp.put("message", "Ocorreu algum problema interno com o sistema! ");
-			return ok(jsResp);
 		}
 
 		jsResp.put("status", 0);
