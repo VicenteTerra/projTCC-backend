@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import classesConsulta.ConsultaMatricula;
 import models.Aluno;
+import models.AutorizaEstabelecimento;
 import models.Estabelecimento;
 import models.Instituicao;
 import models.Usuario;
@@ -144,14 +145,17 @@ public class AlunoController extends Controller {
 			jsResp.put("message", "Consulta bem sucedida.");
 			Instituicao inst = Instituicao.findById(alunoConsulta.getInstituicao());
 			Estabelecimento estab = Estabelecimento.findById(idEstab);
+			AutorizaEstabelecimento auto = AutorizaEstabelecimento.getAutorizacoesByEstabelecimentoInstituicao(idEstab,
+					alunoConsulta.getInstituicao());
 			try {
-				if (inst.getEstabelecimentoCredenciados().contains(estab)) {
+				if (auto != null) {
 					ConsultaMatricula consulta = (ConsultaMatricula) Class
 							.forName("classesConsulta." + inst.getClasseConsulta().toUpperCase()).newInstance();
 					ConsultaResponse resp = consulta.obterStatusMatricula(alunoConsulta.getMatricula(), ws);
 					if (resp == null) {
 						jsResp.put("status", 1);
-						jsResp.put("message", "Usuário não encontrado em nenhuma instituição cadastrada ou sua conta está desativada!");
+						jsResp.put("message",
+								"Usuário não encontrado em nenhuma instituição cadastrada ou sua conta está desativada!");
 					} else {
 						jsResp.put("status", 0);
 						jsResp.put("message", "ok");

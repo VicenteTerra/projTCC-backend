@@ -30,5 +30,10 @@ public class CONSULTAUFLA implements ConsultaMatricula {
 		}
 		return null;
 	}
+	
+	public ConsultaResponse obterStatusMatricula(String mat) {
+		return null;
+	}
+
 
 }

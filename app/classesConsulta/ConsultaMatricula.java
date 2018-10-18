@@ -6,5 +6,6 @@ import responses.ConsultaResponse;
 public interface ConsultaMatricula {
 
 	public ConsultaResponse obterStatusMatricula(String mat, WSClient ws);
+	public ConsultaResponse obterStatusMatricula(String mat);
 
 }
