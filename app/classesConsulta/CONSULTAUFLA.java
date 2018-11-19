@@ -17,8 +17,10 @@ public class CONSULTAUFLA implements ConsultaMatricula {
 		WSRequest request = ws.url("http://localhost:8777/ufla/consultaMatricula/" + mat);
 		CompletionStage<WSResponse> responsePromise = request.get();
 		CompletionStage<JsonNode> jsonPromise = responsePromise.thenApply(WSResponse::asJson);
-
 		try {
+			if (jsonPromise.toCompletableFuture().get().findValue("matricula") == null) {
+				return null;
+			}
 			return new ConsultaResponse(jsonPromise.toCompletableFuture().get().findValue("nome").asText(),
 					jsonPromise.toCompletableFuture().get().findValue("matricula").asText(),
 					jsonPromise.toCompletableFuture().get().findValue("cpf").asText(),

@@ -148,10 +148,11 @@ public class AlunoController extends Controller {
 			AutorizaEstabelecimento auto = AutorizaEstabelecimento.getAutorizacoesByEstabelecimentoInstituicao(idEstab,
 					alunoConsulta.getInstituicao());
 			try {
-				if (auto != null) {
+				if (auto.getStatus() == 1) {
 					ConsultaMatricula consulta = (ConsultaMatricula) Class
 							.forName("classesConsulta." + inst.getClasseConsulta().toUpperCase()).newInstance();
 					ConsultaResponse resp = consulta.obterStatusMatricula(alunoConsulta.getMatricula(), ws);
+					System.out.println(resp);
 					if (resp == null) {
 						jsResp.put("status", 1);
 						jsResp.put("message",

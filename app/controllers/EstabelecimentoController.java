@@ -126,8 +126,14 @@ public class EstabelecimentoController extends Controller {
 		String cnpj = json.findValue("cnpj").asText();
 
 		Estabelecimento estabelecimento = new Estabelecimento();
+		estabelecimento = Estabelecimento.findByCnpj(cnpj);
+		if(estabelecimento != null) {
+			jsResp.put("status", 1);
+			jsResp.put("message", "Já existe estabelecimento cadastrado com esse CNPJ");
+			return ok(jsResp);
+		}
 		Usuario newUser = new Usuario();
-
+		estabelecimento = new Estabelecimento();
 		estabelecimento.setNome(json.findValue("nome").asText());
 		estabelecimento.setCnpj(cnpj);
 		estabelecimento.setEmail(json.findValue("email").asText());
@@ -144,6 +150,7 @@ public class EstabelecimentoController extends Controller {
 		if (json.findValue("tipoEstabelecimento").asText().equals("Transporte"))
 			estabelecimento.setTipoEtabelecimento(3);
 		try {
+		
 			estabelecimento.save();
 			List<Instituicao> instituicoes = Instituicao.find.all();
 			for (Instituicao inst : instituicoes) {
@@ -163,7 +170,7 @@ public class EstabelecimentoController extends Controller {
 		}
 
 		JsonNode files = json.findValue("files");
-		if (files.size() > 0) {
+		if (files != null && files.size() > 0) {
 			try {
 				for (JsonNode js : files) {
 					Documento newDoc = new Documento();
