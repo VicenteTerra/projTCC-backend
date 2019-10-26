@@ -29,7 +29,7 @@ public class CONSULTAUNILAVRAS implements ConsultaMatricula {
 
 		try {
 			Connection con = DriverManager.getConnection(url, username, password);
-			PreparedStatement stmt1 = con.prepareStatement("SELECT * FROM aluno_info WHERE matricula = 201134105");
+			PreparedStatement stmt1 = con.prepareStatement("SELECT * FROM aluno_info WHERE matricula =" + mat);
 			ResultSet rs1 = stmt1.executeQuery();
 			while (rs1.next()) {
 				return new ConsultaResponse(rs1.getString("nome"), rs1.getString("matricula"), rs1.getString("cpf"),
